@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation'; // Importa usePathname para obtener la ruta actual
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Calendar as CalendarIcon, BarChart as ChartBarIcon, Folder as FolderIcon, Home as HomeIcon, Inbox as InboxIcon, Users as UsersIcon } from 'lucide-react';
 
@@ -14,22 +15,23 @@ type NavigationItem = {
 };
 
 const navigation: NavigationItem[] = [
-  { name: 'Dashboard', icon: HomeIcon, current: true, href: '/' },
+  { name: 'Dashboard', icon: HomeIcon, current: false, href: '/' },
   {
     name: 'Archive',
     icon: FolderIcon,
     current: false,
     children: [
-      { name: 'Overview', href: '/' },
-      { name: 'Members', href: '/' },
-      { name: 'Calendar', href: '/' },
-      { name: 'Settings', href: '/' },
+      { name: 'Overview', href: '/overview' },
+      { name: 'Members', href: '/members' },
+      { name: 'Calendar', href: '/calendar' },
+      { name: 'Settings', href: '/settings' },
     ],
   },
   {
     name: 'About',
     icon: UsersIcon,
     current: false,
+    href: '/about',
   },
   // Resto de los elementos...
 ];
@@ -39,22 +41,25 @@ function classNames(...classes: (string | undefined | false)[]): string {
 }
 
 export function Sidebar({ isSidebarOpen }: { isSidebarOpen: boolean }) {
+  const pathname = usePathname(); // Obtén la ruta actual
+
   return (
     <div
       className={classNames(
-        'fixed top-10 left-0 h-screen flex flex-col overflow-y-auto border-r bg-[hsl(var(--background))] border-[hsl(var(--border))] pt-5 pb-4 transition-transform duration-300 ease-in-out',
+        'fixed top-16 left-0 h-screen flex flex-col overflow-y-auto border-r bg-[hsl(var(--background))] border-[hsl(var(--border))] pt-5 pb-4 transition-transform duration-300 ease-in-out',
         isSidebarOpen ? 'w-64 translate-x-0' : '-translate-x-full' // Ajusta el ancho y la posición
       )}
     >
       <div className="mt-5 flex flex-col flex-grow">
         <nav className="flex-1 space-y-1 bg-[hsl(var(--background))] px-2" aria-label="Sidebar">
-          {navigation.map((item) =>
-            !item.children ? (
+          {navigation.map((item) => {
+            const isItemActive = item.href ? pathname === item.href : item.children?.some(child => pathname === child.href);
+            return !item.children ? (
               <div key={item.name}>
                 <Link href={item.href || '#'}>
                   <span
                     className={classNames(
-                      item.current
+                      isItemActive
                         ? 'bg-[hsl(var(--muted))] text-[hsl(var(--foreground))]'
                         : 'bg-[hsl(var(--background))] text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--secondary))] hover:text-[hsl(var(--foreground))]',
                       'group w-full flex items-center pl-2 py-2 text-sm font-medium rounded-md',
@@ -63,7 +68,7 @@ export function Sidebar({ isSidebarOpen }: { isSidebarOpen: boolean }) {
                   >
                     <item.icon
                       className={classNames(
-                        item.current ? 'text-[hsl(var(--foreground))]' : 'text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))]',
+                        isItemActive ? 'text-[hsl(var(--foreground))]' : 'text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))]',
                         'mr-3 flex-shrink-0 h-6 w-6'
                       )}
                       aria-hidden="true"
@@ -76,7 +81,7 @@ export function Sidebar({ isSidebarOpen }: { isSidebarOpen: boolean }) {
               <Collapsible key={item.name} className="space-y-1">
                 <CollapsibleTrigger
                   className={classNames(
-                    item.current
+                    isItemActive
                       ? 'bg-[hsl(var(--muted))] text-[hsl(var(--foreground))]'
                       : 'bg-[hsl(var(--background))] text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--secondary))] hover:text-[hsl(var(--foreground))]',
                     'group w-full flex items-center pl-2 pr-1 py-2 text-left text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))]'
@@ -100,18 +105,28 @@ export function Sidebar({ isSidebarOpen }: { isSidebarOpen: boolean }) {
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <div className="space-y-1">
-                    {item.children.map((subItem) => (
-                      <Link key={subItem.name} href={subItem.href}>
-                        <span className="group flex w-full items-center rounded-md py-2 pl-11 pr-2 text-sm font-medium text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--secondary))] hover:text-[hsl(var(--foreground))]">
-                          {subItem.name}
-                        </span>
-                      </Link>
-                    ))}
+                    {item.children.map((subItem) => {
+                      const isSubItemActive = pathname === subItem.href;
+                      return (
+                        <Link key={subItem.name} href={subItem.href}>
+                          <span
+                            className={classNames(
+                              isSubItemActive
+                                ? 'bg-[hsl(var(--muted))] text-[hsl(var(--foreground))]'
+                                : 'bg-[hsl(var(--background))] text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--secondary))] hover:text-[hsl(var(--foreground))]',
+                              'group flex w-full items-center rounded-md py-2 pl-11 pr-2 text-sm font-medium'
+                            )}
+                          >
+                            {subItem.name}
+                          </span>
+                        </Link>
+                      );
+                    })}
                   </div>
                 </CollapsibleContent>
               </Collapsible>
-            )
-          )}
+            );
+          })}
         </nav>
       </div>
     </div>
