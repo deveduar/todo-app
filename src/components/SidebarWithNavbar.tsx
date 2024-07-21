@@ -12,7 +12,8 @@ export function SidebarWithNavbar({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col">
               {/* Contenedor para el Navbar */}
-      <div className="flex justify-center mb-6">
+      {/* <div className="flex justify-center mb-6"> */}
+      <div className="">
         <Navbar />
       </div>
       {/* Botón para abrir/cerrar la barra lateral */}
