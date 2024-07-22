@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation'; // Importa usePathname para obtener la ruta actual
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -50,6 +50,14 @@ export function Sidebar({ isSidebarOpen }: { isSidebarOpen: boolean }) {
         isSidebarOpen ? 'w-64 translate-x-0' : '-translate-x-full' // Ajusta el ancho y la posición
       )}
     >
+      {/* Contenedor del logotipo */}
+      <div className="flex items-center justify-center py-2">
+        <div className="text-[color:var(--foreground)] font-bold text-xl">
+          {/* Aquí puedes insertar tu logotipo como texto o imagen */}
+          <span>Unbrick</span>
+        </div>
+      </div>
+      
       <div className="mt-5 flex flex-col flex-grow">
         <nav className="flex-1 space-y-1 bg-[hsl(var(--background))] px-2" aria-label="Sidebar">
           {navigation.map((item) => {

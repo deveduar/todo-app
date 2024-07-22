@@ -1,4 +1,5 @@
 // import { Post } from "@/components/post"
+import React from 'react';
 
 export default function AboutPage() {
     return (
