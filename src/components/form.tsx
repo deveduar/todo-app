@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { AlertDemo } from "@/components/alert";
 
 // Define el esquema usando zod
 const formSchema = z.object({
@@ -66,7 +67,7 @@ const CustomForm: React.FC = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 py-7">
         <FormField
           control={form.control}
           name="title"
@@ -118,12 +119,12 @@ const CustomForm: React.FC = () => {
           )}
         />
 
-        <Button type="submit">Submit</Button>
+        <Button type="submit" >Submit</Button>
       </form>
 
       {/* Mostrar mensaje de éxito o error */}
-      {message && <div className="mt-4 text-green-600">{message}</div>}
-      {error && <div className="mt-4 text-red-600">{error}</div>}
+      {message && <AlertDemo  title="Success" description={message} type="success" />}
+      {error && <AlertDemo title="Error" description={error} type="error" />}
     </Form>
   );
 };

@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation'; // Importa usePathname para obtener la ruta actual
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Calendar as CalendarIcon, BarChart as ChartBarIcon, Folder as FolderIcon, Home as HomeIcon, Inbox as InboxIcon, Users as UsersIcon } from 'lucide-react';
+import { Calendar as CalendarIcon, BarChart as ChartBarIcon, Folder as FolderIcon, Home as HomeIcon, Inbox as InboxIcon, Users as UsersIcon, User as UserIcon } from 'lucide-react';
 
 type NavigationItem = {
   name: string;
@@ -32,6 +32,12 @@ const navigation: NavigationItem[] = [
     icon: UsersIcon,
     current: false,
     href: '/about',
+  },
+  {
+    name: 'Sign Up',
+    icon: UserIcon,
+    current: false,
+    href: '/signup',
   },
   // Resto de los elementos...
 ];

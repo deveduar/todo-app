@@ -16,11 +16,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 // Define el esquema usando zod
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters long"),
+  terms: z.boolean().refine(val => val === true, {
+    message: "You must accept the terms and conditions",
+  }),
 });
 
 // Define el tipo de datos del formulario
@@ -68,7 +74,7 @@ const EmailForm: React.FC = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 ">
         {error && <div style={{ color: 'red' }}>{error}</div>}
 
         <FormField
@@ -100,6 +106,41 @@ const EmailForm: React.FC = () => {
               <FormDescription>
                 This is your email address.
               </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="Enter your password" {...field} />
+              </FormControl>
+              <FormDescription>
+                This is your password.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="terms"
+          render={({ field }) => (
+            <FormItem>
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="terms"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+                <Label htmlFor="terms">Accept terms and conditions</Label>
+              </div>
               <FormMessage />
             </FormItem>
           )}

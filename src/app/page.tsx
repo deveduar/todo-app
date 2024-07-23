@@ -1,6 +1,5 @@
 import { MyCard } from "@/components/card";
 import CustomForm from '@/components/form';
-import EmailForm from '@/components/form-email';
 
 export default function Home() {
   return (
@@ -10,7 +9,6 @@ export default function Home() {
             <CustomForm />
             <h2 className="mt-6 text-center text-3xl font-extrabold ">Login</h2>
 
-            <EmailForm />
       </div>
       <div className="flex flex-wrap gap-4 justify-center items-center pt-5">
         <MyCard />
