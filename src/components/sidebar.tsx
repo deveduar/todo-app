@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation'; // Importa usePathname para obtener la ruta actual
+import { usePathname } from 'next/navigation';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Calendar as CalendarIcon, BarChart as ChartBarIcon, Folder as FolderIcon, Home as HomeIcon, Inbox as InboxIcon, Users as UsersIcon, User as UserIcon } from 'lucide-react';
 
@@ -52,12 +52,12 @@ export function Sidebar({ isSidebarOpen }: { isSidebarOpen: boolean }) {
   return (
     <div
       className={classNames(
-        'fixed top-16 left-0 h-screen flex flex-col overflow-y-auto border-r bg-[hsl(var(--background))] border-[hsl(var(--border))] pt-5 pb-4 transition-transform duration-300 ease-in-out',
+        'fixed top-0 left-0 h-full flex flex-col overflow-y-auto border-r bg-[hsl(var(--background))] border-[hsl(var(--border))] transition-transform duration-300 ease-in-out',
         isSidebarOpen ? 'w-64 translate-x-0' : '-translate-x-full' // Ajusta el ancho y la posición
       )}
     >
       {/* Contenedor del logotipo */}
-      <div className="flex items-center justify-center py-2">
+      <div className="flex items-center justify-center py-4 border-b">
         <div className="text-[color:var(--foreground)] font-bold text-xl">
           {/* Aquí puedes insertar tu logotipo como texto o imagen */}
           <span>Unbrick</span>
@@ -76,8 +76,7 @@ export function Sidebar({ isSidebarOpen }: { isSidebarOpen: boolean }) {
                       isItemActive
                         ? 'bg-[hsl(var(--muted))] text-[hsl(var(--foreground))]'
                         : 'bg-[hsl(var(--background))] text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--secondary))] hover:text-[hsl(var(--foreground))]',
-                      'group w-full flex items-center pl-2 py-2 text-sm font-medium rounded-md',
-                      !isSidebarOpen && 'hidden' // Oculta el ítem cuando la barra está colapsada
+                      'group w-full flex items-center pl-2 py-2 text-sm font-medium rounded-md'
                     )}
                   >
                     <item.icon

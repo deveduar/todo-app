@@ -30,12 +30,12 @@ const components: { title: string; href: string; description: string }[] = [
     description:
       "For sighted users to preview content available behind a link.",
   },
-  // {
-  //   title: "Progress",
-  //   href: "/",
-  //   description:
-  //     "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
-  // },
+  {
+    title: "Progress",
+    href: "/",
+    description:
+      "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
+  },
   // {
   //   title: "Scroll-area",
   //   href: "/",
@@ -121,6 +121,13 @@ export function NavigationMenuDemo() {
           <Link href="/about" legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
               About
+            </NavigationMenuLink>
+          </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <Link href="/signup" legacyBehavior passHref>
+            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+            Sign Up
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>

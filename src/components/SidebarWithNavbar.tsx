@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Sidebar } from "@/components/sidebar"; 
 import { ChevronRight as ChevronRightIcon } from 'lucide-react';
-import { Navbar } from "@/components/navbar";
+// import { Navbar } from "@/components/navbar";
+import { NavigationMenuDemo } from "@/components/nav-menu";
 
 export function SidebarWithNavbar({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -49,9 +50,6 @@ export function SidebarWithNavbar({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <div className="">
-        <Navbar />
-      </div>
       <button
         ref={buttonRef}
         className="flex items-center justify-center p-2 rounded-md text-[color:var(--foreground)] hover:bg-[color:var(--muted)] transition-colors duration-200 ease-in-out fixed top-4 left-4 z-50"
@@ -64,7 +62,7 @@ export function SidebarWithNavbar({ children }: { children: React.ReactNode }) {
           aria-hidden="true"
         />
       </button>
-      <div ref={sidebarRef}>
+      <div ref={sidebarRef} className={`fixed top-0 left-0 h-full z-40 transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <Sidebar isSidebarOpen={isSidebarOpen} />
       </div>
       <main
@@ -72,6 +70,11 @@ export function SidebarWithNavbar({ children }: { children: React.ReactNode }) {
           isSidebarOpen ? 'md:ml-64' : 'ml-0'
         }`}
       >
+             <div className="flex flex-col items-center justify-between p-10 ">
+      <nav className="shadow-lg rounded  flex justify-center items-center ">
+          <NavigationMenuDemo  />
+      </nav>
+    </div>
         {children}
       </main>
     </div>
