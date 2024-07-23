@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -28,12 +28,19 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 const CustomForm: React.FC = () => {
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+      imageUrl: "",
+      videoUrl: "",
+    },
   });
 
   const onSubmit = async (data: FormData) => {
-    console.log(data);
     try {
       const response = await fetch('/api/hello', {
         method: 'POST',
@@ -45,12 +52,15 @@ const CustomForm: React.FC = () => {
 
       if (response.ok) {
         const result = await response.json();
-        console.log('Success:', result);
+        setMessage('Form submitted successfully!');
+        setError(null); // Clear previous errors
       } else {
-        console.error('Error:', response.statusText);
+        setMessage(null);
+        setError('Failed to submit the form.');
       }
     } catch (error) {
-      console.error('Error:', error);
+      setMessage(null);
+      setError('An unexpected error occurred.');
     }
   };
 
@@ -110,6 +120,10 @@ const CustomForm: React.FC = () => {
 
         <Button type="submit">Submit</Button>
       </form>
+
+      {/* Mostrar mensaje de éxito o error */}
+      {message && <div className="mt-4 text-green-600">{message}</div>}
+      {error && <div className="mt-4 text-red-600">{error}</div>}
     </Form>
   );
 };
