@@ -52,7 +52,7 @@ const TodoList: React.FC = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="">
       <TodoInput addTodo={addTodo} />
 
       <Tabs defaultValue="todos" className="mt-4">
