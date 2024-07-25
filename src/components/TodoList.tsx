@@ -1,24 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabaseClient';
 import TodoItem from '@/components/TodoItem';
 import TodoInput from '@/components/TodoInput';
-
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type Todo = {
+  id: string;
   text: string;
   completed: boolean;
 };
@@ -27,32 +18,71 @@ const TodoList: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [completedTodos, setCompletedTodos] = useState<Todo[]>([]);
 
-  const addTodo = (todoText: string) => {
-    setTodos([...todos, { text: todoText, completed: false }]);
+  const fetchTodos = async () => {
+    const { data, error } = await supabase.from('tasks').select('*').order('created_at', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching tasks:', error);
+      return;
+    }
+
+    const incomplete = data.filter((task: Todo) => !task.completed);
+    const completed = data.filter((task: Todo) => task.completed);
+
+    setTodos(incomplete);
+    setCompletedTodos(completed);
   };
 
-  const completeTodo = (index: number) => {
-    const todoToComplete = todos[index];
-    setTodos(todos.filter((_, i) => i !== index));
-    setCompletedTodos([...completedTodos, { ...todoToComplete, completed: true }]);
+  useEffect(() => {
+    fetchTodos();
+  }, []);
+
+  const addTodo = async (todoText: string) => {
+    const { error } = await supabase.from('tasks').insert([{ text: todoText, completed: false }]);
+
+    if (error) {
+      console.error('Error adding task:', error);
+      return;
+    }
+
+    fetchTodos();
   };
 
-  const uncompleteTodo = (index: number) => {
-    const todoToUncomplete = completedTodos[index];
-    setCompletedTodos(completedTodos.filter((_, i) => i !== index));
-    setTodos([...todos, { ...todoToUncomplete, completed: false }]);
+  const completeTodo = async (id: string) => {
+    const { error } = await supabase.from('tasks').update({ completed: true }).eq('id', id);
+
+    if (error) {
+      console.error('Error completing task:', error);
+      return;
+    }
+
+    fetchTodos();
   };
 
-  const removeTodo = (index: number) => {
-    setTodos(todos.filter((_, i) => i !== index));
+  const uncompleteTodo = async (id: string) => {
+    const { error } = await supabase.from('tasks').update({ completed: false }).eq('id', id);
+
+    if (error) {
+      console.error('Error uncompleting task:', error);
+      return;
+    }
+
+    fetchTodos();
   };
 
-  const removeCompletedTodo = (index: number) => {
-    setCompletedTodos(completedTodos.filter((_, i) => i !== index));
+  const removeTodo = async (id: string) => {
+    const { error } = await supabase.from('tasks').delete().eq('id', id);
+
+    if (error) {
+      console.error('Error removing task:', error);
+      return;
+    }
+
+    fetchTodos();
   };
 
   return (
-    <div className="">
+    <div>
       <TodoInput addTodo={addTodo} />
 
       <Tabs defaultValue="todos" className="mt-4">
@@ -70,10 +100,10 @@ const TodoList: React.FC = () => {
               {todos.length === 0 ? (
                 <p className="text-gray-500">No todos yet.</p>
               ) : (
-                todos.map((todo, index) => (
+                todos.map((todo) => (
                   <TodoItem
-                    key={index}
-                    index={index}
+                    key={todo.id}
+                    id={todo.id}
                     todo={todo}
                     completeTodo={completeTodo}
                     removeTodo={removeTodo}
@@ -93,13 +123,13 @@ const TodoList: React.FC = () => {
               {completedTodos.length === 0 ? (
                 <p className="text-gray-500">No completed todos yet.</p>
               ) : (
-                completedTodos.map((todo, index) => (
+                completedTodos.map((todo) => (
                   <TodoItem
-                    key={index}
-                    index={index}
+                    key={todo.id}
+                    id={todo.id}
                     todo={todo}
                     completeTodo={uncompleteTodo}
-                    removeTodo={removeCompletedTodo}
+                    removeTodo={removeTodo}
                     isCompleted
                   />
                 ))

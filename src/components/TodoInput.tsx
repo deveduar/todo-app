@@ -1,28 +1,19 @@
+// src/components/TodoInput.tsx
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { CirclePlus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
-// Define el esquema usando zod
 const formSchema = z.object({
   todo: z.string().min(1, "Task is required"),
 });
 
-// Define el tipo de datos del formulario
 type FormData = z.infer<typeof formSchema>;
 
 type TodoInputProps = {
@@ -35,29 +26,21 @@ const TodoInput: React.FC<TodoInputProps> = ({ addTodo }) => {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      todo: ''
-    }
+      todo: '',
+    },
   });
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setIsLoading(true);
-
     try {
-      addTodo(data.todo);
-      // Reset the form input after successful submission
+      await addTodo(data.todo);
       form.reset();
     } catch (error) {
-      console.error('An unexpected error occurred:', error);
+      console.error('Error adding todo:', error);
     } finally {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (form.formState.isSubmitSuccessful) {
-      form.reset({ todo: '' });
-    }
-  }, [form]);
 
   return (
     <Form {...form}>
@@ -83,17 +66,8 @@ const TodoInput: React.FC<TodoInputProps> = ({ addTodo }) => {
             )}
           />
         </div>
-
-        <Button
-          type="submit"
-          disabled={isLoading}
-          className="ml-2"
-        >
-          {isLoading ? (
-            'Loading...'
-          ) : (
-            <CirclePlus className="w-5 h-5" />
-          )}
+        <Button type="submit" disabled={isLoading} className="ml-2">
+          {isLoading ? 'Loading...' : <CirclePlus className="w-5 h-5" />}
         </Button>
       </form>
     </Form>
