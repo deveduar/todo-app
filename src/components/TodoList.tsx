@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import TodoItem from '@/components/TodoItem';
 import TodoInput from '@/components/TodoInput';
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -12,6 +11,10 @@ type Todo = {
   id: string;
   text: string;
   completed: boolean;
+  created_at: string | null;
+  due_date: string | null;
+  completed_at: string | null;
+  reminder_date: string | null;
 };
 
 const TodoList: React.FC = () => {
@@ -37,8 +40,13 @@ const TodoList: React.FC = () => {
     fetchTodos();
   }, []);
 
-  const addTodo = async (todoText: string) => {
-    const { error } = await supabase.from('tasks').insert([{ text: todoText, completed: false }]);
+  const addTodo = async (todoText: string, dueDate?: Date, reminderDate?: Date) => {
+    const { error } = await supabase.from('tasks').insert([{ 
+      text: todoText, 
+      completed: false,
+      due_date: dueDate ? dueDate.toISOString() : null,
+      reminder_date: reminderDate ? reminderDate.toISOString() : null
+    }]);
 
     if (error) {
       console.error('Error adding task:', error);
@@ -49,7 +57,7 @@ const TodoList: React.FC = () => {
   };
 
   const completeTodo = async (id: string) => {
-    const { error } = await supabase.from('tasks').update({ completed: true }).eq('id', id);
+    const { error } = await supabase.from('tasks').update({ completed: true, completed_at: new Date().toISOString() }).eq('id', id);
 
     if (error) {
       console.error('Error completing task:', error);
@@ -60,7 +68,7 @@ const TodoList: React.FC = () => {
   };
 
   const uncompleteTodo = async (id: string) => {
-    const { error } = await supabase.from('tasks').update({ completed: false }).eq('id', id);
+    const { error } = await supabase.from('tasks').update({ completed: false, completed_at: null }).eq('id', id);
 
     if (error) {
       console.error('Error uncompleting task:', error);
@@ -106,6 +114,7 @@ const TodoList: React.FC = () => {
                     id={todo.id}
                     todo={todo}
                     completeTodo={completeTodo}
+                    uncompleteTodo={uncompleteTodo}
                     removeTodo={removeTodo}
                   />
                 ))
@@ -128,7 +137,8 @@ const TodoList: React.FC = () => {
                     key={todo.id}
                     id={todo.id}
                     todo={todo}
-                    completeTodo={uncompleteTodo}
+                    completeTodo={() => {}}
+                    uncompleteTodo={uncompleteTodo}
                     removeTodo={removeTodo}
                     isCompleted
                   />
