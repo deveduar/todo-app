@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -10,7 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useToast } from "@/components/ui/use-toast";
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const formSchema = z.object({
@@ -27,10 +27,13 @@ type TodoInputProps = {
   addTodo: (todo: string, dueDate?: Date, reminderDate?: Date) => void;
 };
 
-const generateTimeOptions = () => {
+const generateTimeOptions = (referenceDate: Date, isCurrentDate: boolean) => {
   const times = [];
-  for (let i = 0; i < 24; i++) {
-    for (let j = 0; j < 60; j += 5) {
+  const startHour = isCurrentDate ? referenceDate.getHours() : 0;
+  const startMinute = isCurrentDate ? referenceDate.getMinutes() : 0;
+
+  for (let i = startHour; i < 24; i++) {
+    for (let j = (i === startHour ? startMinute : 0); j < 60; j += 5) {
       const hours = i.toString().padStart(2, '0');
       const minutes = j.toString().padStart(2, '0');
       times.push(`${hours}:${minutes}`);
@@ -39,11 +42,12 @@ const generateTimeOptions = () => {
   return times;
 };
 
-const timeOptions = generateTimeOptions();
-
-
 const TodoInput: React.FC<TodoInputProps> = ({ addTodo }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [dueTimeOptions, setDueTimeOptions] = useState<string[]>([]);
+  const [reminderTimeOptions, setReminderTimeOptions] = useState<string[]>([]);
+  const [selectedDueDate, setSelectedDueDate] = useState<Date | undefined>(undefined);
+  const [selectedReminderDate, setSelectedReminderDate] = useState<Date | undefined>(undefined);
   const { toast } = useToast();
 
   const form = useForm<FormData>({
@@ -56,6 +60,25 @@ const TodoInput: React.FC<TodoInputProps> = ({ addTodo }) => {
       reminder_time: undefined,
     },
   });
+
+  // Update time options based on selected date
+  useEffect(() => {
+    const now = new Date();
+    if (selectedDueDate && selectedDueDate.toDateString() === now.toDateString()) {
+      setDueTimeOptions(generateTimeOptions(now, true));
+    } else {
+      setDueTimeOptions(generateTimeOptions(new Date(), false));
+    }
+  }, [selectedDueDate]);
+
+  useEffect(() => {
+    const now = new Date();
+    if (selectedReminderDate && selectedReminderDate.toDateString() === now.toDateString()) {
+      setReminderTimeOptions(generateTimeOptions(now, true));
+    } else {
+      setReminderTimeOptions(generateTimeOptions(new Date(), false));
+    }
+  }, [selectedReminderDate]);
 
   const toLocal = (date: Date | undefined, time: string | undefined) => {
     if (!date) return undefined;
@@ -74,8 +97,6 @@ const TodoInput: React.FC<TodoInputProps> = ({ addTodo }) => {
   
     return localDate;
   };
-  
-  
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setIsLoading(true);
@@ -105,10 +126,17 @@ const TodoInput: React.FC<TodoInputProps> = ({ addTodo }) => {
     }
   };
 
+  // Disable past dates
+  const disablePastDates = (date: Date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to start of today
+    return date < today;
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col space-y-7 p-2">
-{/* input */}
+        {/* input */}
         <div className="flex space-x-6 items-center">
           <FormField
             control={form.control}
@@ -127,7 +155,8 @@ const TodoInput: React.FC<TodoInputProps> = ({ addTodo }) => {
             )}
           />
         </div>
-{/* Due date */}
+
+        {/* Due date */}
         <div className="flex items-center space-x-2">
           <Popover>
             <PopoverTrigger asChild>
@@ -152,9 +181,11 @@ const TodoInput: React.FC<TodoInputProps> = ({ addTodo }) => {
                 <Calendar
                   mode="single"
                   selected={form.getValues('due_date') as Date | undefined}
-                  onSelect={(date) => {
-                    if (date) {
+                  disabled={disablePastDates} // Deshabilita fechas pasadas
+                  onDayClick={(date) => {
+                    if (!disablePastDates(date)) { // Asegúrate de que la fecha no esté deshabilitada
                       form.setValue('due_date', new Date(date), { shouldValidate: true });
+                      setSelectedDueDate(new Date(date));
                     }
                   }}
                 />
@@ -174,7 +205,7 @@ const TodoInput: React.FC<TodoInputProps> = ({ addTodo }) => {
                 <SelectValue placeholder="Due time" />
               </SelectTrigger>
               <SelectContent>
-                {timeOptions.map((time) => (
+                {dueTimeOptions.map((time) => (
                   <SelectItem key={time} value={time}>
                     {time}
                   </SelectItem>
@@ -183,7 +214,8 @@ const TodoInput: React.FC<TodoInputProps> = ({ addTodo }) => {
             </Select>
           </div>
         </div>
-{/* Reminder Date */}
+
+        {/* Reminder Date */}
         <div className="flex items-center space-x-2">
           <Popover>
             <PopoverTrigger asChild>
@@ -208,9 +240,11 @@ const TodoInput: React.FC<TodoInputProps> = ({ addTodo }) => {
                 <Calendar
                   mode="single"
                   selected={form.getValues('reminder_date') as Date | undefined}
-                  onSelect={(date) => {
-                    if (date) {
+                  disabled={disablePastDates} // Deshabilita fechas pasadas
+                  onDayClick={(date) => {
+                    if (!disablePastDates(date)) { // Asegúrate de que la fecha no esté deshabilitada
                       form.setValue('reminder_date', new Date(date), { shouldValidate: true });
+                      setSelectedReminderDate(new Date(date));
                     }
                   }}
                 />
@@ -230,7 +264,7 @@ const TodoInput: React.FC<TodoInputProps> = ({ addTodo }) => {
                 <SelectValue placeholder="Reminder time" />
               </SelectTrigger>
               <SelectContent>
-                {timeOptions.map((time) => (
+                {reminderTimeOptions.map((time) => (
                   <SelectItem key={time} value={time}>
                     {time}
                   </SelectItem>
@@ -240,11 +274,9 @@ const TodoInput: React.FC<TodoInputProps> = ({ addTodo }) => {
           </div>
         </div>
 
-        <div className="flex items-center space-x-2">
-          <Button type="submit" disabled={isLoading} className="flex items-center justify-center">
-            {isLoading ? 'Loading...' : <CirclePlus className="w-4 h-4 m-0" />}
-          </Button>
-        </div>
+        <Button type="submit" className="self-end" disabled={isLoading}>
+          {isLoading ? "Adding..." : <CirclePlus className="mr-2 h-4 w-4" />} Add Task
+        </Button>
       </form>
     </Form>
   );
