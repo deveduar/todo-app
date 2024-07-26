@@ -22,7 +22,7 @@ const TodoList: React.FC = () => {
   const [completedTodos, setCompletedTodos] = useState<Todo[]>([]);
 
   const fetchTodos = async () => {
-    const { data, error } = await supabase.from('tasks').select('*').order('created_at', { ascending: true });
+    const { data, error } = await supabase.from('tasks').select('*').order('created_at', { ascending: false });
 
     if (error) {
       console.error('Error fetching tasks:', error);

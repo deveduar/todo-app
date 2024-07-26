@@ -8,6 +8,8 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { formatInTimeZone } from 'date-fns-tz';
+import { es } from 'date-fns/locale';
 
 type TodoItemProps = {
   id: string;
@@ -26,10 +28,12 @@ type TodoItemProps = {
 };
 
 const TodoItem: React.FC<TodoItemProps> = ({ id, todo, completeTodo, uncompleteTodo, removeTodo, isCompleted }) => {
+  const timeZone = 'Europe/Madrid';
+
   const formatDateTime = (dateStr: string | null) => {
     if (!dateStr) return 'N/A';
-    const date = new Date(dateStr);
-    return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+    const utcDate = new Date(dateStr);
+    return formatInTimeZone(utcDate, timeZone, 'dd/MM/yy HH:mm:ss zz', { locale: es });
   };
 
   return (
@@ -64,7 +68,12 @@ const TodoItem: React.FC<TodoItemProps> = ({ id, todo, completeTodo, uncompleteT
           </HoverCardContent>
         </HoverCard>
       </div>
-      
+      <div>
+        <p><strong>Created At:</strong> {formatDateTime(todo.created_at)}</p>
+        <p><strong>Due Date:</strong> {formatDateTime(todo.due_date)}</p>
+        <p><strong>Completed At:</strong> {formatDateTime(todo.completed_at)}</p>
+        <p><strong>Reminder Date:</strong> {formatDateTime(todo.reminder_date)}</p>
+      </div>
       <Button onClick={() => removeTodo(id)} variant="ghost" className="text-[var(--destructive)]">
         <Trash2 className="w-4 h-4" />
       </Button>
