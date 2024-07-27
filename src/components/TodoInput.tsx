@@ -139,9 +139,9 @@ const TodoInput: React.FC<TodoInputProps> = ({ addTodo }) => {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col space-y-7 p-2">
+          <form onSubmit={form.handleSubmit(onSubmit)} className=" space-y-7 p-2">
             {/* Input */}
-            <div className="flex flex-col">
+            <div className="">
               <FormField
                 control={form.control}
                 name="todo"
@@ -161,9 +161,9 @@ const TodoInput: React.FC<TodoInputProps> = ({ addTodo }) => {
             </div>
 
             {/* Due Date and Time */}
-            <div className="flex flex-col  space-y-4">
+            <div className=" space-y-4">
               {/* Due Date */}
-              <div className="flex-1 flex flex-col">
+              <div className=" flex flex-col">
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -197,12 +197,6 @@ const TodoInput: React.FC<TodoInputProps> = ({ addTodo }) => {
                           }
                         }}
                       />
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              {/* Due Time */}
               <div className={cn(
                         " text-left font-normal w-full",
                         !form.getValues('due_time') && "text-muted-foreground"
@@ -224,6 +218,33 @@ const TodoInput: React.FC<TodoInputProps> = ({ addTodo }) => {
                   </SelectContent>
                 </Select>
               </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* Due Time */}
+              {/* <div className={cn(
+                        " text-left font-normal w-full",
+                        !form.getValues('due_time') && "text-muted-foreground"
+                      )}>
+              <Select
+                  onValueChange={(value) => form.setValue('due_time', value, { shouldValidate: true })}
+                  value={form.getValues('due_time') || ''}
+                >
+                  <SelectTrigger>
+                    <Clock className="mr-2 h-4 w-4 opacity-50" />
+                    <SelectValue placeholder="Due time" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {dueTimeOptions.map((time) => (
+                      <SelectItem key={time} value={time}>
+                        {time}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div> */}
             </div>
 
             {/* Reminder Date and Time */}
@@ -261,13 +282,7 @@ const TodoInput: React.FC<TodoInputProps> = ({ addTodo }) => {
                           }
                         }}
                       />
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              {/* Reminder Time */}
-              <div className={cn(
+                                    <div className={cn(
                         " text-left font-normal w-full",
                         !form.getValues('reminder_time') && "text-muted-foreground"
                       )}>
@@ -288,6 +303,33 @@ const TodoInput: React.FC<TodoInputProps> = ({ addTodo }) => {
                   </SelectContent>
                 </Select>
               </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* Reminder Time */}
+              {/* <div className={cn(
+                        " text-left font-normal w-full",
+                        !form.getValues('reminder_time') && "text-muted-foreground"
+                      )}>
+                <Select
+                  onValueChange={(value) => form.setValue('reminder_time', value, { shouldValidate: true })}
+                  value={form.getValues('reminder_time') || ''}
+                >
+                  <SelectTrigger>
+                    <Clock className="mr-2 h-4 w-4 opacity-50" />
+                    <SelectValue placeholder="Reminder time" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {reminderTimeOptions.map((time) => (
+                      <SelectItem key={time} value={time}>
+                        {time}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div> */}
             </div>
 
             <Button type="submit" className="self-start" disabled={isLoading}>
@@ -297,7 +339,7 @@ const TodoInput: React.FC<TodoInputProps> = ({ addTodo }) => {
         </Form>
       </CardContent>
       <CardFooter>
-        <p>Use this form to add a new task with optional due and reminder dates and times.</p>
+        <p>Optional due and reminder dates and times.</p>
       </CardFooter>
     </Card>
   );

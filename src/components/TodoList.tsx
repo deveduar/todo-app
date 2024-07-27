@@ -90,7 +90,7 @@ const TodoList: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row md:space-x-4">
+    <div className="flex flex-col md:flex-row md:space-x-4 pb-56">
       <div className="md:w-1/3">
         <TodoInput addTodo={addTodo} />
       </div>
