@@ -70,7 +70,7 @@ export function SidebarWithNavbar({ children }: { children: React.ReactNode }) {
           isSidebarOpen ? 'md:ml-64' : 'ml-0'
         }`}
       >
-             <div className="flex flex-col items-center justify-between p-10 ">
+             <div className="flex flex-col items-center justify-between pb-10 ">
       <nav className="shadow-lg rounded  flex justify-center items-center ">
           <NavigationMenuDemo  />
       </nav>

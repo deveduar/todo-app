@@ -60,7 +60,7 @@ export function Sidebar({ isSidebarOpen }: { isSidebarOpen: boolean }) {
       <div className="flex items-center justify-center py-4 border-b">
         <div className="text-[color:var(--foreground)] font-bold text-xl">
           {/* Aquí puedes insertar tu logotipo como texto o imagen */}
-          <span>Unbrick</span>
+          <span>TodoIt</span>
         </div>
       </div>
       
