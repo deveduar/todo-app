@@ -90,64 +90,68 @@ const TodoList: React.FC = () => {
   };
 
   return (
-    <div>
-      <TodoInput addTodo={addTodo} />
+    <div className="flex flex-col md:flex-row md:space-x-4">
+      <div className="md:w-1/3">
+        <TodoInput addTodo={addTodo} />
+      </div>
 
-      <Tabs defaultValue="todos" className="mt-4">
-        <TabsList className="grid grid-cols-2">
-          <TabsTrigger value="todos">Todos</TabsTrigger>
-          <TabsTrigger value="completed">Completed</TabsTrigger>
-        </TabsList>
+      <div className="md:w-2/3 mt-4 md:mt-0">
+        <Tabs defaultValue="todos">
+          <TabsList className="grid grid-cols-2">
+            <TabsTrigger value="todos">Todos</TabsTrigger>
+            <TabsTrigger value="completed">Completed</TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="todos">
-          <Card>
-            <CardHeader>
-              <CardTitle>Todos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {todos.length === 0 ? (
-                <p className="text-gray-500">No todos yet.</p>
-              ) : (
-                todos.map((todo) => (
-                  <TodoItem
-                    key={todo.id}
-                    id={todo.id}
-                    todo={todo}
-                    completeTodo={completeTodo}
-                    uncompleteTodo={uncompleteTodo}
-                    removeTodo={removeTodo}
-                  />
-                ))
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
+          <TabsContent value="todos">
+            <Card>
+              <CardHeader>
+                <CardTitle>Todos</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {todos.length === 0 ? (
+                  <p className="text-gray-500">No todos yet.</p>
+                ) : (
+                  todos.map((todo) => (
+                    <TodoItem
+                      key={todo.id}
+                      id={todo.id}
+                      todo={todo}
+                      completeTodo={completeTodo}
+                      uncompleteTodo={uncompleteTodo}
+                      removeTodo={removeTodo}
+                    />
+                  ))
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-        <TabsContent value="completed">
-          <Card>
-            <CardHeader>
-              <CardTitle>Completed Todos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {completedTodos.length === 0 ? (
-                <p className="text-gray-500">No completed todos yet.</p>
-              ) : (
-                completedTodos.map((todo) => (
-                  <TodoItem
-                    key={todo.id}
-                    id={todo.id}
-                    todo={todo}
-                    completeTodo={() => {}}
-                    uncompleteTodo={uncompleteTodo}
-                    removeTodo={removeTodo}
-                    isCompleted
-                  />
-                ))
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="completed">
+            <Card>
+              <CardHeader>
+                <CardTitle>Completed Todos</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {completedTodos.length === 0 ? (
+                  <p className="text-gray-500">No completed todos yet.</p>
+                ) : (
+                  completedTodos.map((todo) => (
+                    <TodoItem
+                      key={todo.id}
+                      id={todo.id}
+                      todo={todo}
+                      completeTodo={() => {}}
+                      uncompleteTodo={uncompleteTodo}
+                      removeTodo={removeTodo}
+                      isCompleted
+                    />
+                  ))
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 };

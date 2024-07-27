@@ -12,13 +12,13 @@ export function SidebarWithNavbar({ children }: { children: React.ReactNode }) {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setIsSidebarOpen(true);
-      } else {
-        setIsSidebarOpen(false);
-      }
-    };
+    // const handleResize = () => {
+    //   if (window.innerWidth >= 768) {
+    //     setIsSidebarOpen(true);
+    //   } else {
+    //     setIsSidebarOpen(false);
+    //   }
+    // };
 
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -33,13 +33,13 @@ export function SidebarWithNavbar({ children }: { children: React.ReactNode }) {
       }
     };
 
-    window.addEventListener('resize', handleResize);
+    // window.addEventListener('resize', handleResize);
     document.addEventListener('mousedown', handleClickOutside);
 
-    handleResize(); // Verifica el tamaño de pantalla al cargar la página
+    // handleResize(); 
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      // window.removeEventListener('resize', handleResize);
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);

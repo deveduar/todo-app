@@ -68,12 +68,12 @@ const TodoItem: React.FC<TodoItemProps> = ({ id, todo, completeTodo, uncompleteT
           </HoverCardContent>
         </HoverCard>
       </div>
-      <div>
+      {/* <div>
         <p><strong>Created At:</strong> {formatDateTime(todo.created_at)}</p>
         <p><strong>Due Date:</strong> {formatDateTime(todo.due_date)}</p>
         <p><strong>Completed At:</strong> {formatDateTime(todo.completed_at)}</p>
         <p><strong>Reminder Date:</strong> {formatDateTime(todo.reminder_date)}</p>
-      </div>
+      </div> */}
       <Button onClick={() => removeTodo(id)} variant="ghost" className="text-[var(--destructive)]">
         <Trash2 className="w-4 h-4" />
       </Button>
