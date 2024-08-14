@@ -12,13 +12,13 @@ export function SidebarWithNavbar({ children }: { children: React.ReactNode }) {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setIsSidebarOpen(true);
-      } else {
-        setIsSidebarOpen(false);
-      }
-    };
+    // const handleResize = () => {
+    //   if (window.innerWidth >= 768) {
+    //     setIsSidebarOpen(true);
+    //   } else {
+    //     setIsSidebarOpen(false);
+    //   }
+    // };
 
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -33,13 +33,13 @@ export function SidebarWithNavbar({ children }: { children: React.ReactNode }) {
       }
     };
 
-    window.addEventListener('resize', handleResize);
+    // window.addEventListener('resize', handleResize);
     document.addEventListener('mousedown', handleClickOutside);
 
-    handleResize(); // Verifica el tamaño de pantalla al cargar la página
+    // handleResize(); 
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      // window.removeEventListener('resize', handleResize);
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
@@ -70,7 +70,7 @@ export function SidebarWithNavbar({ children }: { children: React.ReactNode }) {
           isSidebarOpen ? 'md:ml-64' : 'ml-0'
         }`}
       >
-             <div className="flex flex-col items-center justify-between p-10 ">
+             <div className="flex flex-col items-center justify-between pb-10 ">
       <nav className="shadow-lg rounded  flex justify-center items-center ">
           <NavigationMenuDemo  />
       </nav>

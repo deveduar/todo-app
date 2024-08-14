@@ -1,113 +1,157 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabaseClient';
 import TodoItem from '@/components/TodoItem';
 import TodoInput from '@/components/TodoInput';
-
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type Todo = {
+  id: string;
   text: string;
   completed: boolean;
+  created_at: string | null;
+  due_date: string | null;
+  completed_at: string | null;
+  reminder_date: string | null;
 };
 
 const TodoList: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [completedTodos, setCompletedTodos] = useState<Todo[]>([]);
 
-  const addTodo = (todoText: string) => {
-    setTodos([...todos, { text: todoText, completed: false }]);
+  const fetchTodos = async () => {
+    const { data, error } = await supabase.from('tasks').select('*').order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching tasks:', error);
+      return;
+    }
+
+    const incomplete = data.filter((task: Todo) => !task.completed);
+    const completed = data.filter((task: Todo) => task.completed);
+
+    setTodos(incomplete);
+    setCompletedTodos(completed);
   };
 
-  const completeTodo = (index: number) => {
-    const todoToComplete = todos[index];
-    setTodos(todos.filter((_, i) => i !== index));
-    setCompletedTodos([...completedTodos, { ...todoToComplete, completed: true }]);
+  useEffect(() => {
+    fetchTodos();
+  }, []);
+
+  const addTodo = async (todoText: string, dueDate?: Date, reminderDate?: Date) => {
+    const { error } = await supabase.from('tasks').insert([{ 
+      text: todoText, 
+      completed: false,
+      due_date: dueDate ? dueDate.toISOString() : null,
+      reminder_date: reminderDate ? reminderDate.toISOString() : null
+    }]);
+
+    if (error) {
+      console.error('Error adding task:', error);
+      return;
+    }
+
+    fetchTodos();
   };
 
-  const uncompleteTodo = (index: number) => {
-    const todoToUncomplete = completedTodos[index];
-    setCompletedTodos(completedTodos.filter((_, i) => i !== index));
-    setTodos([...todos, { ...todoToUncomplete, completed: false }]);
+  const completeTodo = async (id: string) => {
+    const { error } = await supabase.from('tasks').update({ completed: true, completed_at: new Date().toISOString() }).eq('id', id);
+
+    if (error) {
+      console.error('Error completing task:', error);
+      return;
+    }
+
+    fetchTodos();
   };
 
-  const removeTodo = (index: number) => {
-    setTodos(todos.filter((_, i) => i !== index));
+  const uncompleteTodo = async (id: string) => {
+    const { error } = await supabase.from('tasks').update({ completed: false, completed_at: null }).eq('id', id);
+
+    if (error) {
+      console.error('Error uncompleting task:', error);
+      return;
+    }
+
+    fetchTodos();
   };
 
-  const removeCompletedTodo = (index: number) => {
-    setCompletedTodos(completedTodos.filter((_, i) => i !== index));
+  const removeTodo = async (id: string) => {
+    const { error } = await supabase.from('tasks').delete().eq('id', id);
+
+    if (error) {
+      console.error('Error removing task:', error);
+      return;
+    }
+
+    fetchTodos();
   };
 
   return (
-    <div className="">
-      <TodoInput addTodo={addTodo} />
+    <div className="flex flex-col md:flex-row md:space-x-4 pb-56">
+      <div className="md:w-1/3">
+        <TodoInput addTodo={addTodo} />
+      </div>
 
-      <Tabs defaultValue="todos" className="mt-4">
-        <TabsList className="grid grid-cols-2">
-          <TabsTrigger value="todos">Todos</TabsTrigger>
-          <TabsTrigger value="completed">Completed</TabsTrigger>
-        </TabsList>
+      <div className="md:w-2/3 mt-4 md:mt-0">
+        <Tabs defaultValue="todos">
+          <TabsList className="grid grid-cols-2">
+            <TabsTrigger value="todos">Todos</TabsTrigger>
+            <TabsTrigger value="completed">Completed</TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="todos">
-          <Card>
-            <CardHeader>
-              <CardTitle>Todos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {todos.length === 0 ? (
-                <p className="text-gray-500">No todos yet.</p>
-              ) : (
-                todos.map((todo, index) => (
-                  <TodoItem
-                    key={index}
-                    index={index}
-                    todo={todo}
-                    completeTodo={completeTodo}
-                    removeTodo={removeTodo}
-                  />
-                ))
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
+          <TabsContent value="todos">
+            <Card>
+              <CardHeader>
+                <CardTitle>Todos</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {todos.length === 0 ? (
+                  <p className="text-gray-500">No todos yet.</p>
+                ) : (
+                  todos.map((todo) => (
+                    <TodoItem
+                      key={todo.id}
+                      id={todo.id}
+                      todo={todo}
+                      completeTodo={completeTodo}
+                      uncompleteTodo={uncompleteTodo}
+                      removeTodo={removeTodo}
+                    />
+                  ))
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-        <TabsContent value="completed">
-          <Card>
-            <CardHeader>
-              <CardTitle>Completed Todos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {completedTodos.length === 0 ? (
-                <p className="text-gray-500">No completed todos yet.</p>
-              ) : (
-                completedTodos.map((todo, index) => (
-                  <TodoItem
-                    key={index}
-                    index={index}
-                    todo={todo}
-                    completeTodo={uncompleteTodo}
-                    removeTodo={removeCompletedTodo}
-                    isCompleted
-                  />
-                ))
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="completed">
+            <Card>
+              <CardHeader>
+                <CardTitle>Completed Todos</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {completedTodos.length === 0 ? (
+                  <p className="text-gray-500">No completed todos yet.</p>
+                ) : (
+                  completedTodos.map((todo) => (
+                    <TodoItem
+                      key={todo.id}
+                      id={todo.id}
+                      todo={todo}
+                      completeTodo={() => {}}
+                      uncompleteTodo={uncompleteTodo}
+                      removeTodo={removeTodo}
+                      isCompleted
+                    />
+                  ))
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 };
